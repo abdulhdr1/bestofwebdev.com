@@ -3,7 +3,7 @@ import Head from "next/head";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 import { trpc } from "../utils/trpc";
-import type { CategoriesEnum } from "../components/SelectCategory";
+import { Categories, CategoriesEnum } from "../components/SelectCategory";
 import { SelectCategory } from "../components/SelectCategory";
 import { DialogNewPost } from "../components/DialogNewPost";
 import { useRouter } from "next/router";
@@ -11,6 +11,15 @@ import { Voter } from "../components/Voter";
 import { Loader } from "../components/Loader";
 import { SignInButton } from "../components/SignInButton";
 import { LogOutButton } from "../components/LogOutButton";
+import { Post } from "@prisma/client";
+import { useEffect, useState } from "react";
+
+function truncateIfBig(str: string, number = 24) {
+  if (str.length > number) {
+    return `${str.slice(0, number)}..`;
+  }
+  return str;
+}
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -58,34 +67,7 @@ const Home: NextPage = () => {
           <div className="flex w-full flex-col items-center gap-2 ">
             {list.data ? (
               list.data.length > 0 ? (
-                list.data.map((i) => {
-                  const cleansedURL =
-                    new URL(i.link).hostname.replace("www.", "") +
-                    new URL(i.link).pathname;
-                  return (
-                    <div
-                      key={i.id}
-                      className="item-center flex w-full justify-between rounded-lg border border-gray-800 bg-slate-900 p-4 text-white"
-                    >
-                      <div className="flex flex-col items-center">
-                        <h2 className="my-auto font-bold">{cleansedURL}</h2>
-                        <p className="w-full text-sm">Sent by: {i.user.name}</p>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <span className="p-1">{i.category}</span>
-                        <a
-                          className="rounded bg-gray-800 px-2 py-1"
-                          target={"_blank"}
-                          href={i.link}
-                          rel="noreferrer"
-                        >
-                          Visit website
-                        </a>
-                        <Voter id={i.id} votes={i.votes} />
-                      </div>
-                    </div>
-                  );
-                })
+                list.data.map((i) => <Post key={i.id} post={i} />)
               ) : (
                 <EmptyState />
               )
@@ -106,6 +88,68 @@ function EmptyState() {
     <div className="item-center flex w-full justify-between rounded-lg border border-gray-800 bg-slate-900 p-4 text-white">
       <div className="w-full text-center">
         <span>There are still no entries for this filter!</span>
+      </div>
+    </div>
+  );
+}
+
+function Post({ post }: { post: Post }) {
+  const [title, setTitle] = useState<string | null>(null);
+  const [description, setDescription] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (post.og) {
+      const ogParsed = JSON.parse(post.og as string);
+      const ogTitle = ogParsed.ogTitle ?? "";
+      const ogSiteName = ogParsed.ogSiteName ?? "";
+      const ogDescription = ogParsed.ogDescription ?? "";
+      const result =
+        ogTitle && ogSiteName
+          ? `${ogTitle} - ${ogSiteName}`
+          : ogTitle ?? ogSiteName;
+
+      setDescription(truncateIfBig(ogDescription, 128));
+      setTitle(truncateIfBig(result));
+    } else {
+      setTitle(truncateIfBig(post.link));
+    }
+  }, [post]);
+
+  return (
+    <div className="item-center flex w-full justify-between rounded-lg border border-gray-800 bg-slate-900 p-4 text-white">
+      <div className="flex flex-col items-start">
+        <h2 className="my-auto mb-2 font-bold">{title}</h2>
+        {description && (
+          <h3 className="my-auto mb-4 pr-2 text-sm">{description}</h3>
+        )}
+        <p className="w-full text-sm">
+          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+          {/* @ts-ignore-next */}
+          Sent by: {post.user.name} -{" "}
+          <span
+            className={`w-8 rounded p-[2px] px-1 text-xs font-bold ${
+              false &&
+              " bg-gray-400 bg-purple-400 bg-yellow-400 bg-blue-700 bg-blue-400"
+            } ${
+              Categories.find(({ value }) => value === post.category)?.color
+            }`}
+          >
+            {Categories.find(({ value }) => value === post.category)?.label}
+          </span>
+        </p>
+      </div>
+      <div className="flex items-center gap-4">
+        <a
+          className="w-28 rounded border border-gray-800 bg-gray-800 p-1 text-center hover:bg-gray-900 "
+          target={"_blank"}
+          href={post.link}
+          rel="noreferrer"
+        >
+          Visit website
+        </a>
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore-next */}
+        <Voter id={post.id} votes={post.votes} />
       </div>
     </div>
   );

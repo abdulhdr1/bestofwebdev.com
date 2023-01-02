@@ -7,11 +7,11 @@ import {
 import { z } from "zod";
 
 export const Categories = [
-  { value: "ALL", label: "All", color: "gray-400" },
-  { value: "COMP_SCI", label: "Computer Science", color: "purple-400" },
-  { value: "JS", label: "JavaScript", color: "yellow-400" },
-  { value: "TS", label: "TypeScript", color: "blue-700" },
-  { value: "REACT", label: "React", color: "blue-400" },
+  { value: "ALL", label: "All", color: "bg-gray-400" },
+  { value: "COMP_SCI", label: "Computer Science", color: "bg-purple-400" },
+  { value: "JS", label: "JavaScript", color: "bg-yellow-400" },
+  { value: "TS", label: "TypeScript", color: "bg-blue-700" },
+  { value: "REACT", label: "React", color: "bg-blue-400" },
 ] as const;
 
 export type CategoriesEnum = typeof Categories[number]["value"];

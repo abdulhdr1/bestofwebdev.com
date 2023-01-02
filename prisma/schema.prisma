@@ -19,6 +19,7 @@ model Post {
   id        String   @id @default(cuid())
   link      String
   category  String
+  og        Json?
   votes     Vote[]
   userId  String
   user User      @relation(fields: [userId], references: [id], onDelete: Cascade)

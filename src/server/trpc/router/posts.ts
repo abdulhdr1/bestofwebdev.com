@@ -1,4 +1,5 @@
 import { z } from "zod";
+import ogs from "open-graph-scraper";
 
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 
@@ -6,10 +7,22 @@ export const postsRouter = router({
   create: protectedProcedure
     .input(z.object({ link: z.string(), category: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const newPost = await ctx.prisma.post.create({
-        data: { ...input, userId: ctx.session.user.id },
-      });
-      return newPost;
+      try {
+        const { result } = await ogs({ url: input.link });
+        const newPost = await ctx.prisma.post.create({
+          data: {
+            ...input,
+            userId: ctx.session.user.id,
+            og: JSON.stringify(result),
+          },
+        });
+        return newPost;
+      } catch (e) {
+        const newPost = await ctx.prisma.post.create({
+          data: { ...input, userId: ctx.session.user.id },
+        });
+        return newPost;
+      }
     }),
   list: publicProcedure.input(z.string().nullable()).query(({ ctx, input }) => {
     const filter = input
