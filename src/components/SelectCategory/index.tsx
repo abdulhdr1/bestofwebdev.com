@@ -4,7 +4,6 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
-import { z } from "zod";
 
 export const Categories = [
   { value: "ALL", label: "All", color: "bg-gray-400" },

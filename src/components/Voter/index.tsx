@@ -12,7 +12,12 @@ type VoterProps = {
 
 export function Voter({ id, votes }: VoterProps) {
   const session = useSession();
-  const mutation = trpc.posts.vote.useMutation();
+  const utils = trpc.useContext();
+  const mutation = trpc.posts.vote.useMutation({
+    onSuccess() {
+      utils.posts.list.invalidate();
+    },
+  });
   const [vote, setVote] = useState<number | null>(null);
   const currentVote = votes.find(
     ({ userId }) => userId === session.data?.user?.id

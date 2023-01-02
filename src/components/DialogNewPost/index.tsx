@@ -9,7 +9,12 @@ export function DialogNewPost() {
   const [category, setCategory] = useState<CategoriesEnum | null>(null);
   const [link, setLink] = useState("");
   const [error, setError] = useState<any>(null);
-  const mutation = trpc.posts.create.useMutation();
+  const utils = trpc.useContext();
+  const mutation = trpc.posts.create.useMutation({
+    onSuccess() {
+      utils.posts.list.invalidate();
+    },
+  });
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
     try {
