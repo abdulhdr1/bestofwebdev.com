@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { Voter } from "../components/Voter";
 import { Loader } from "../components/Loader";
 import { SignInButton } from "../components/SignInButton";
+import { LogOutButton } from "../components/LogOutButton";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -46,7 +47,13 @@ const Home: NextPage = () => {
           </h2>
           <div className="flex w-1/2  justify-between sm:w-full">
             <SelectCategory onValueChange={handleSelectChange} />
-            {session.data?.user ? <DialogNewPost /> : <SignInButton />}
+            {session.data?.user ? (
+              <div>
+                <DialogNewPost /> <LogOutButton />
+              </div>
+            ) : (
+              <SignInButton />
+            )}
           </div>
           <div className="flex w-full flex-col items-center gap-2 ">
             {list.data ? (

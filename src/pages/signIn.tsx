@@ -19,11 +19,10 @@ type SignInProps = {
 
 export default function SignIn({ providers }: SignInProps) {
   const [isLoading, setIsLoading] = useState(false);
-  async function handleClick(id: string) {
+  function handleClick(id: string) {
     try {
       setIsLoading(true);
-      await signIn(id);
-      setIsLoading(false);
+      signIn(id, { callbackUrl: "/" });
     } catch (e) {
       setIsLoading(false);
     }
