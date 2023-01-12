@@ -16,9 +16,10 @@ const Home: NextPage = () => {
   const router = useRouter();
   const session = useSession();
   const query = router.query.index
-    ? router.query.index[0]?.toUpperCase()
+    ? router.query.index[0]?.toUpperCase() ?? null
     : null;
-  const list = trpc.posts.list.useQuery(query ?? null);
+  const [postsList] = trpc.useQueries((t) => [t.posts.list(query)]);
+
   function handleSelectChange(v: CategoriesEnum) {
     if (v === "ALL") {
       router.push(`/`);
@@ -56,9 +57,9 @@ const Home: NextPage = () => {
             )}
           </div>
           <div className="flex w-full flex-col items-center gap-2 ">
-            {list.data ? (
-              list.data.length > 0 ? (
-                list.data.map((i) => <Post key={i.id} post={i} />)
+            {postsList.data ? (
+              postsList.data.length > 0 ? (
+                postsList.data.map((i) => <Post key={i.id} post={i} />)
               ) : (
                 <EmptyState />
               )

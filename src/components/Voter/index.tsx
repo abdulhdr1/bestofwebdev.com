@@ -1,9 +1,9 @@
 import { ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { trpc } from "../../utils/trpc";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import type { Vote } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { sortPostsByBalance } from "../../helpers/sortPostsByBalance";
 
 type VoterProps = {
   postId: string;
@@ -14,22 +14,56 @@ export function Voter({ postId, votes }: VoterProps) {
   const session = useSession();
   const utils = trpc.useContext();
   const [vote, setVote] = useState<number | null>(null);
-  const currentVote = votes.find(
-    ({ userId }) => userId === session.data?.user?.id
+  const currentVote = useMemo(
+    () => votes.find(({ userId }) => userId === session.data?.user?.id),
+    [votes, session.data?.user?.id]
   );
+  const postList = trpc.useContext().posts.list;
   const createVote = trpc.votes.create.useMutation({
-    onSuccess() {
+    onSettled() {
       utils.posts.list.invalidate();
+    },
+    onMutate(variables) {
+      const newList = postList.getData(null);
+      if (!newList) return;
+      newList
+        ?.find((post) => post.id === postId)
+        ?.votes.push({
+          id: session.data?.user?.id as string,
+          userId: session.data?.user?.id as string,
+          postId,
+          value: variables.value,
+        });
+      postList.setData(null, sortPostsByBalance(newList));
     },
   });
   const updateVote = trpc.votes.update.useMutation({
-    onSuccess() {
+    onSettled() {
       utils.posts.list.invalidate();
+    },
+    onMutate(variables) {
+      const newList = postList.getData(null);
+
+      if (!newList) return;
+      const newVote = newList
+        ?.find((post) => post.id === postId)
+        ?.votes?.find((vote) => vote.id === variables.voteId);
+      if (newVote) newVote.value = variables.value;
+      return postList.setData(null, sortPostsByBalance(newList));
     },
   });
   const deleteVote = trpc.votes.remove.useMutation({
-    onSuccess() {
+    onSettled() {
       utils.posts.list.invalidate();
+    },
+    onMutate(voteId) {
+      const newList = postList.getData(null);
+      if (!newList) return;
+      const newVote = newList
+        ?.find((post) => post.id === postId)
+        ?.votes?.find((vote) => vote.id === voteId);
+      if (newVote) newVote.value = 0;
+      return postList.setData(null, sortPostsByBalance(newList));
     },
   });
 
@@ -67,6 +101,7 @@ export function Voter({ postId, votes }: VoterProps) {
   return (
     <div className="flex flex-col items-center">
       <button
+        type="button"
         onClick={() => (vote === 1 ? handleDeleteVote() : handleVote(1))}
         className={`rounded  p-1 ${
           vote === 1 ? "bg-orange-600" : "bg-gray-800"
@@ -76,6 +111,7 @@ export function Voter({ postId, votes }: VoterProps) {
       </button>
       {voteBalance}
       <button
+        type="button"
         onClick={() => (vote === -1 ? handleDeleteVote() : handleVote(-1))}
         className={`rounded bg-gray-800 p-1 ${
           vote === -1 ? "bg-orange-600" : "bg-gray-800"

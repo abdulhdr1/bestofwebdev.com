@@ -2,6 +2,8 @@ import { z } from "zod";
 import ogs from "open-graph-scraper";
 
 import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { sortPostsByBalance } from "../../../helpers/sortPostsByBalance";
+import { Post, Vote } from "@prisma/client";
 
 export const postsRouter = router({
   create: protectedProcedure
@@ -46,13 +48,6 @@ export const postsRouter = router({
         ...filter,
       });
 
-      const postSortedByBalance = (await posts).sort((a, b) => {
-        const Abalance = a.votes.reduce((acc, vote) => acc + vote.value, 0);
-        const Bbalance = b.votes.reduce((acc, vote) => acc + vote.value, 0);
-
-        return Bbalance - Abalance;
-      });
-
-      return postSortedByBalance;
+      return sortPostsByBalance(await posts);
     }),
 });
