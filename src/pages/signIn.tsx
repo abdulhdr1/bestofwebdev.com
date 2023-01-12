@@ -40,8 +40,10 @@ export default function SignIn({ providers }: SignInProps) {
               onClick={() => handleClick(provider.id)}
               disabled={isLoading}
             >
+              {provider.name === "Google" ? (
+                <AiOutlineGoogle size={32} className="mr-6" />
+              ) : null}
               Sign in with {provider.name}
-              <AiOutlineGoogle size={32} className="ml-6" />
               {isLoading && <Loader />}
             </button>
           </div>

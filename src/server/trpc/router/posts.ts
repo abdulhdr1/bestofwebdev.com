@@ -24,58 +24,35 @@ export const postsRouter = router({
         return newPost;
       }
     }),
-  list: publicProcedure.input(z.string().nullable()).query(({ ctx, input }) => {
-    const filter = input
-      ? {
-          where: { category: z.string().parse(input).toUpperCase() },
-        }
-      : undefined;
+  list: publicProcedure
+    .input(z.string().nullable())
+    .query(async ({ ctx, input }) => {
+      const filter = input
+        ? {
+            where: { category: z.string().parse(input).toUpperCase() },
+          }
+        : undefined;
 
-    return ctx.prisma.post.findMany({
-      include: {
-        votes: true,
-        user: {
-          select: {
-            name: true,
+      const posts = ctx.prisma.post.findMany({
+        include: {
+          votes: true,
+          user: {
+            select: {
+              name: true,
+            },
           },
         },
-      },
-      orderBy: {
-        votes: {
-          _count: "desc",
-        },
-      },
-      ...filter,
-    });
-  }),
-  vote: protectedProcedure
-    .input(
-      z.object({
-        postId: z.string(),
-        voteId: z.string().nullable(),
-        value: z.number().min(-1).max(1),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      if (input.voteId) {
-        const updatedVote = await ctx.prisma.vote.update({
-          where: {
-            id: input.voteId,
-          },
-          data: {
-            value: input.value,
-          },
-        });
-        return updatedVote;
-      } else {
-        const newVote = await ctx.prisma.vote.create({
-          data: {
-            value: input.value,
-            userId: ctx.session.user.id,
-            postId: input.postId,
-          },
-        });
-        return newVote;
-      }
+
+        ...filter,
+      });
+
+      const postSortedByBalance = (await posts).sort((a, b) => {
+        const Abalance = a.votes.reduce((acc, vote) => acc + vote.value, 0);
+        const Bbalance = b.votes.reduce((acc, vote) => acc + vote.value, 0);
+
+        return Bbalance - Abalance;
+      });
+
+      return postSortedByBalance;
     }),
 });
