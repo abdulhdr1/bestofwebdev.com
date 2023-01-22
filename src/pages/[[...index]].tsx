@@ -10,7 +10,9 @@ import { useRouter } from "next/router";
 import { Loader } from "../components/Loader";
 import { SignInButton } from "../components/SignInButton";
 import { LogOutButton } from "../components/LogOutButton";
-import { Post } from "../components/Post";
+import { useEffect, useRef } from "react";
+import autoAnimate from "@formkit/auto-animate";
+import { PostList } from "../components/PostList";
 
 const Home: NextPage = () => {
   const router = useRouter();
@@ -19,6 +21,11 @@ const Home: NextPage = () => {
     ? router.query.index[0]?.toUpperCase() ?? null
     : null;
   const [postsList] = trpc.useQueries((t) => [t.posts.list(query)]);
+  const parent = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    parent.current && autoAnimate(parent.current);
+  }, [parent]);
 
   function handleSelectChange(v: CategoriesEnum) {
     if (v === "ALL") {
@@ -56,16 +63,11 @@ const Home: NextPage = () => {
               <SignInButton />
             )}
           </div>
-          <div className="flex w-full flex-col items-center gap-2 ">
-            {postsList.data ? (
-              postsList.data.length > 0 ? (
-                postsList.data.map((i) => <Post key={i.id} post={i} />)
-              ) : (
-                <EmptyState />
-              )
-            ) : (
-              <Loader />
-            )}
+          <div
+            className="flex w-full flex-col items-center gap-2 "
+            ref={parent}
+          >
+            {postsList.data ? <PostList posts={postsList.data} /> : <Loader />}
           </div>
         </div>
       </main>
