@@ -20,7 +20,13 @@ const Home: NextPage = () => {
   const query = router.query.index
     ? router.query.index[0]?.toUpperCase() ?? null
     : null;
-  const [postsList] = trpc.useQueries((t) => [t.posts.list(query)]);
+  const [postsList] = trpc.useQueries((t) => [
+    t.posts.list(query, {
+      trpc: {
+        abortOnUnmount: true,
+      },
+    }),
+  ]);
   const parent = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -43,14 +49,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-start bg-gradient-to-bl  from-[#100027] to-[#3b3d6d] bg-fixed">
-        <div className="container flex max-w-3xl flex-col  justify-center gap-12 px-4 py-16 ">
+        <div className="container flex max-w-3xl flex-col justify-center  gap-12 px-4 py-16 text-center ">
           <h1 className="text-2xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             How to{" "}
             <span className="bg-gradient-to-r from-purple-700 to-pink-400 bg-clip-text  font-extrabold text-transparent">
               web-dev
             </span>
           </h1>
-          <h2 className="text-sm font-extrabold leading-10 tracking-tight text-white sm:text-[1.7rem]">
+          <h2 className="text-sm  leading-10 tracking-tight text-white sm:text-[1.7rem]">
             Share with other the knowledge you come across
           </h2>
           <div className="flex w-1/2  justify-between sm:w-full">
