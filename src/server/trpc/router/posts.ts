@@ -41,6 +41,7 @@ export const postsRouter = router({
           user: {
             select: {
               name: true,
+              image: true,
             },
           },
         },

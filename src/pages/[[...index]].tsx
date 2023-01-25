@@ -57,7 +57,7 @@ const Home: NextPage = () => {
             </span>
           </h1>
           <h2 className="text-sm  leading-10 tracking-tight text-white sm:text-[1.7rem]">
-            Share with other the knowledge you come across
+            Share with others the knowledge you come across
           </h2>
           <div className="flex w-1/2  justify-between sm:w-full">
             <SelectCategory onValueChange={handleSelectChange} />
@@ -70,7 +70,7 @@ const Home: NextPage = () => {
             )}
           </div>
           <div
-            className="flex w-full flex-col items-center gap-2 "
+            className="flex w-full flex-col items-center gap-2 text-left"
             ref={parent}
           >
             {postsList.data ? <PostList posts={postsList.data} /> : <Loader />}
