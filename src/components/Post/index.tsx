@@ -41,28 +41,46 @@ export function Post({ post }: PostProps) {
   }, [post]);
 
   return (
-    <div className="item-center flex w-full justify-between rounded-lg border border-gray-800 bg-slate-900 p-4 text-white">
-      <div className="flex flex-col items-start">
-        <h2 className="my-auto mb-2 text-sm font-bold md:text-lg">{title}</h2>
-        {description && (
-          <h3 className="my-auto mb-4 pr-2 text-xs md:text-sm">
-            {description}
-          </h3>
-        )}
-        <div className="w-full text-sm">
-          <PostMetadata user={post.user} category={category} />
+    <div className="item-center w-full justify-between rounded-lg border border-gray-800 bg-slate-900 p-4 text-white ">
+      <div className="justify-between sm:flex">
+        <div className="flex flex-col items-start">
+          <div className="mb-2 flex w-full items-center justify-between sm:mb-0">
+            <h2 className="my-auto font-bold  sm:mb-2 md:text-lg">{title}</h2>
+            <a
+              className="min-w-max rounded border border-gray-800 bg-gray-800 p-1 text-center text-sm hover:bg-gray-900 sm:hidden "
+              target={"_blank"}
+              href={post.link}
+              rel="noreferrer"
+            >
+              Visit website
+            </a>
+          </div>
+          {description && (
+            <h3 className="my-auto pr-2 text-xs sm:mb-4 md:text-sm">
+              {description}
+            </h3>
+          )}
+        </div>
+        <div className="flex items-center justify-end gap-4 sm:justify-between">
+          <a
+            className="hidden w-28 rounded border border-gray-800 bg-gray-800 p-1 text-center hover:bg-gray-900 sm:block "
+            target={"_blank"}
+            href={post.link}
+            rel="noreferrer"
+          >
+            Visit website
+          </a>
+          <div className="hidden sm:block">
+            {post.votes && <Voter postId={post.id} votes={post.votes} />}
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <a
-          className="w-28 rounded border border-gray-800 bg-gray-800 p-1 text-center hover:bg-gray-900 "
-          target={"_blank"}
-          href={post.link}
-          rel="noreferrer"
-        >
-          Visit website
-        </a>
-        {post.votes && <Voter postId={post.id} votes={post.votes} />}
+
+      <div className="flex w-full justify-between text-sm sm:block">
+        <PostMetadata user={post.user} category={category} />
+        <div className="ml-2 flex sm:hidden">
+          {post.votes && <Voter postId={post.id} votes={post.votes} />}
+        </div>
       </div>
     </div>
   );

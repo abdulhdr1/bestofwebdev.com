@@ -33,7 +33,7 @@ export function SelectCategory({
         aria-label="Category"
       >
         <Select.Value placeholder="Filter a category" />
-        <Select.Icon className="ml-4">
+        <Select.Icon className="ml-2 sm:ml-4">
           <ChevronDownIcon />
         </Select.Icon>
       </Select.Trigger>

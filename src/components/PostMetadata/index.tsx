@@ -22,7 +22,7 @@ export function PostMetadata({
       ) : null}
       <div className="ml-1">{user?.name} - </div>
       <div
-        className={`ml-1  flex h-4 rounded px-1 align-middle text-xs font-bold ${
+        className={`min-h-4  ml-1 flex rounded px-1 text-center align-middle text-xs font-bold ${
           false
             ? "bg-gray-400 bg-purple-400 bg-yellow-400 bg-blue-700 bg-blue-400"
             : ""

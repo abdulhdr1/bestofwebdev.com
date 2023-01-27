@@ -99,17 +99,17 @@ export function Voter({ postId, votes }: VoterProps) {
     .reduce((a, b) => a + b, 0);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className=" flex items-center sm:flex-col">
       <button
         type="button"
         onClick={() => (vote === 1 ? handleDeleteVote() : handleVote(1))}
-        className={`rounded  p-1 ${
+        className={`rounded p-1 ${
           vote === 1 ? "bg-orange-600" : "bg-gray-800"
         }`}
       >
         <ChevronUpIcon />
       </button>
-      {voteBalance}
+      <span className="mx-4">{voteBalance}</span>
       <button
         type="button"
         onClick={() => (vote === -1 ? handleDeleteVote() : handleVote(-1))}
