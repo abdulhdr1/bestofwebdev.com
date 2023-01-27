@@ -38,7 +38,7 @@ export function SelectCategory({
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
-        <Select.Content className="w-56 rounded-md border  border-gray-800 bg-gray-900 shadow-lg">
+        <Select.Content className="w-56 rounded-[13px] border  border-gray-800 bg-gray-900 shadow-lg">
           <Select.ScrollUpButton className="SelectScrollButton">
             <ChevronUpIcon />
           </Select.ScrollUpButton>

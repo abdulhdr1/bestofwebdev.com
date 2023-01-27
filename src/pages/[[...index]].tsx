@@ -87,13 +87,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-function EmptyState() {
-  return (
-    <div className="item-center flex w-full justify-between rounded-lg border border-gray-800 bg-slate-900 p-4 text-white">
-      <div className="w-full text-center">
-        <span>There are still no entries for this filter!</span>
-      </div>
-    </div>
-  );
-}
