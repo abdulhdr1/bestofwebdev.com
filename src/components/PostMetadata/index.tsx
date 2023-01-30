@@ -20,7 +20,7 @@ export function PostMetadata({
           alt={`${user?.name} profile image`}
         />
       ) : null}
-      <div className="ml-1">{user?.name} - </div>
+      <div className="ml-2">{user?.name} - </div>
       <div
         className={`min-h-4  ml-1 flex rounded px-1 text-center align-middle text-xs font-bold ${
           false
