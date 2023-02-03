@@ -1,7 +1,8 @@
-import { type NextPage } from "next";
+import superjson from "superjson";
+import { GetStaticProps, InferGetStaticPropsType, type NextPage } from "next";
 import Head from "next/head";
 import { useSession } from "next-auth/react";
-
+import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { trpc } from "../utils/trpc";
 import type { CategoriesEnum } from "../components/SelectCategory";
 import { SelectCategory } from "../components/SelectCategory";
@@ -13,8 +14,10 @@ import { LogOutButton } from "../components/LogOutButton";
 import { useEffect, useRef } from "react";
 import autoAnimate from "@formkit/auto-animate";
 import { PostList } from "../components/PostList";
+import { appRouter } from "../server/trpc/router/_app";
+import { prisma } from "../server/db/client";
 
-const Home: NextPage = () => {
+const Home = (props: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter();
   const session = useSession();
   const query = router.query.index
@@ -91,4 +94,23 @@ const Home: NextPage = () => {
   );
 };
 
+export const getStaticProps: GetStaticProps = async function () {
+  const ssg = createProxySSGHelpers({
+    router: appRouter,
+    ctx: {
+      prisma,
+      session: null,
+    },
+    transformer: superjson,
+  });
+
+  await ssg.posts.list.prefetch(null);
+
+  return {
+    props: {
+      trpcState: ssg.dehydrate(),
+    },
+    revalidate: 15,
+  };
+};
 export default Home;
