@@ -8,7 +8,7 @@ We try to keep this project as simple as possible, so you can start with just th
 
 If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
 
-- [Next.js](https://nextjs.org) 
+- [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
 - [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
@@ -26,3 +26,15 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+# Todo
+
+- [ ] category creation
+- [ ] user profile
+- [ ] comment on posts
+- [ ] vote for post deletion
+- [ ] redesign website
+- [ ] support other login platforms
+  - [ ] discord
+  - [ ] github
+- [ ] delete your own posts
